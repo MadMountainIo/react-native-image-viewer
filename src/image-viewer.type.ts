@@ -104,7 +104,7 @@ export class Props {
    */
   public useNativeDriver?: boolean = false;
 
-  public preloadLimit?: number = 1;
+  public preloadLimit: number = 1;
 
   /**
    * 长按图片的回调
