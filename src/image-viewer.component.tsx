@@ -222,8 +222,15 @@ export default class ImageViewer extends React.Component<Props, State> {
    * 预加载图片
    */
   public preloadImage = (index: number) => {
+    let breakAfter = this.props.preloadLimit;
     if (index < this.state.imageSizes!.length) {
-      this.loadImage(index + 1);
+      for (let i = index; i < this.state.imageSizes!.length; i++, breakAfter--) {
+        console.log(i);
+        if (breakAfter <= 0) {
+          break;
+        }
+        this.loadImage(i + 1);
+      }
     }
   };
   /**
