@@ -180,8 +180,9 @@ export default class ImageViewer extends React.Component<Props, State> {
     // Tagged success if url is started with file:, or not set yet(for custom source.uri).
     if (!image.url || image.url.startsWith(`file:`)) {
       imageLoaded = true;
+    } else if(image?.props?.thumbnailSource) {
+      Image.prefetch(image.props.thumbnailSource);
     }
-
     // 如果已知源图片宽高，直接设置为 success
     if (image.width && image.height) {
       if (this.props.enablePreload && imageLoaded === false) {
