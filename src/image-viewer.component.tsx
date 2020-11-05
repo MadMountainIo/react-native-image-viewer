@@ -226,7 +226,6 @@ export default class ImageViewer extends React.Component<Props, State> {
     let breakAfter = this.props.preloadLimit;
     if (index < this.state.imageSizes!.length) {
       for (let i = index; i < this.state.imageSizes!.length; i++, breakAfter--) {
-        console.log(i);
         if (breakAfter <= 0) {
           break;
         }
