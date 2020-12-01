@@ -223,14 +223,8 @@ export default class ImageViewer extends React.Component<Props, State> {
    * 预加载图片
    */
   public preloadImage = (index: number) => {
-    let breakAfter = this.props.preloadLimit;
     if (index < this.state.imageSizes!.length) {
-      for (let i = index; i < this.state.imageSizes!.length; i++, breakAfter--) {
-        if (breakAfter <= 0) {
-          break;
-        }
-        this.loadImage(i + 1);
-      }
+      this.loadImage(index + 1);
     }
   };
   /**
@@ -540,7 +534,10 @@ export default class ImageViewer extends React.Component<Props, State> {
             };
           }
           if (this.props.enablePreload) {
-            this.preloadImage(this.state.currentShowIndex || 0);
+            for (let index = 0; index < this.props.preloadLimit; index++) {
+              //@ts-ignore
+              this.preloadImage(this.state.currentShowIndex + index || 0);
+            }
           }
           return (
             <ImageZoom
