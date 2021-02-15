@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Image, ImageURISource, Text, View, ViewStyle } from 'react-native';
+import { GestureResponderEvent, Image, ImageURISource, PanResponderGestureState, Text, View, ViewStyle } from 'react-native';
 import { simpleStyle } from './image-viewer.style';
 
 interface IOnMove {
@@ -233,6 +233,16 @@ export class Props {
   public menus?: ({ cancel, saveToLocal }: any) => React.ReactElement<any>;
 
   public predefinedData?: { scale: number, positionX: number, positionY: number };
+
+  public onStartShouldSetPanResponder?: (
+    event: GestureResponderEvent,
+    gestureState: PanResponderGestureState
+  ) => boolean = () => true;
+
+  public onMoveShouldSetPanResponder?: (
+    event: GestureResponderEvent,
+    gestureState: PanResponderGestureState
+  ) => boolean = () => true;
 }
 
 export class State {
