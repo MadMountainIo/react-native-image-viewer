@@ -566,6 +566,8 @@ export default class ImageViewer extends React.Component<Props, State> {
               minScale={this.props.minScale}
               maxScale={this.props.maxScale}
               predefinedData={this.state.currentShowIndex === index ? this.props.predefinedData : undefined}
+              onStartShouldSetPanResponder={this.props.onStartShouldSetPanResponder}
+              onMoveShouldSetPanResponder={this.props.onMoveShouldSetPanResponder}
             >
               {this!.props!.renderImage!(image.props)}
             </ImageZoom>
