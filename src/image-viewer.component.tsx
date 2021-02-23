@@ -439,7 +439,7 @@ export default class ImageViewer extends React.Component<Props, State> {
     const screenHeight = this.height;
 
     const ImageElements = this.props.imageUrls.map((image, index) => {
-      if ((this.state.currentShowIndex || 0) > index + 1 || (this.state.currentShowIndex || 0) < index - 1) {
+      if ((this.state.currentShowIndex || 0) > index + 3 || (this.state.currentShowIndex || 0) < index - 3) {
         return <View key={index} style={{ width: screenWidth, height: screenHeight }} />;
       }
 
