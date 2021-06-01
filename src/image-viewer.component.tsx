@@ -180,7 +180,7 @@ export default class ImageViewer extends React.Component<Props, State> {
     // Tagged success if url is started with file:, or not set yet(for custom source.uri).
     if (!image.url || image.url.startsWith(`file:`)) {
       imageLoaded = true;
-    } else if(image.props && image.props.thumbnailSource) {
+    } else if (image.props && image.props.thumbnailSource) {
       Image.prefetch(image.props.thumbnailSource);
     }
     // 如果已知源图片宽高，直接设置为 success
@@ -477,8 +477,8 @@ export default class ImageViewer extends React.Component<Props, State> {
 
       const Wrapper = ({ children, ...others }: any) => (
         <ImageZoom
-          cropWidth={this.width}
-          cropHeight={this.height}
+          cropWidth={this.props.forceWidth || this.width}
+          cropHeight={this.props.forceHeight || this.height}
           maxOverflow={this.props.maxOverflow}
           horizontalOuterRangeOffset={this.handleHorizontalOuterRangeOffset}
           responderRelease={this.handleResponderRelease}
@@ -546,8 +546,8 @@ export default class ImageViewer extends React.Component<Props, State> {
             <ImageZoom
               key={index}
               ref={el => (this.imageRefs[index] = el)}
-              cropWidth={this.width}
-              cropHeight={this.height}
+              cropWidth={this.props.forceWidth || this.width}
+              cropHeight={this.props.forceHeight || this.height}
               maxOverflow={this.props.maxOverflow}
               horizontalOuterRangeOffset={this.handleHorizontalOuterRangeOffset}
               responderRelease={this.handleResponderRelease}

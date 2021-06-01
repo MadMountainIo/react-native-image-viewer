@@ -106,6 +106,10 @@ export class Props {
 
   public preloadLimit: number = 1;
 
+  public forceWidth?: number;
+
+  public forceHeight?: number
+
   /**
    * 长按图片的回调
    */
