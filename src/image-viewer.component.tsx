@@ -223,14 +223,8 @@ export default class ImageViewer extends React.Component<Props, State> {
    * 预加载图片
    */
   public preloadImage = (index: number) => {
-    let breakAfter = this.props.preloadLimit;
     if (index < this.state.imageSizes!.length) {
-      for (let i = index; i < this.state.imageSizes!.length; i++, breakAfter--) {
-        if (breakAfter <= 0) {
-          break;
-        }
-        this.loadImage(i + 1);
-      }
+      this.loadImage(index + 1);
     }
   };
   /**
@@ -445,7 +439,7 @@ export default class ImageViewer extends React.Component<Props, State> {
     const screenHeight = this.height;
 
     const ImageElements = this.props.imageUrls.map((image, index) => {
-      if ((this.state.currentShowIndex || 0) > index + 1 || (this.state.currentShowIndex || 0) < index - 1) {
+      if ((this.state.currentShowIndex || 0) > index + 3 || (this.state.currentShowIndex || 0) < index - 3) {
         return <View key={index} style={{ width: screenWidth, height: screenHeight }} />;
       }
 
@@ -492,6 +486,8 @@ export default class ImageViewer extends React.Component<Props, State> {
           pinchToZoom={this.props.enableImageZoom}
           enableDoubleClickZoom={this.props.enableImageZoom}
           doubleClickInterval={this.props.doubleClickInterval}
+          onStartShouldSetPanResponder={this.props.onStartShouldSetPanResponder}
+          onMoveShouldSetPanResponder={this.props.onMoveShouldSetPanResponder}
           {...others}
         >
           {children}
@@ -540,7 +536,10 @@ export default class ImageViewer extends React.Component<Props, State> {
             };
           }
           if (this.props.enablePreload) {
-            this.preloadImage(this.state.currentShowIndex || 0);
+            for (let index = 0; index < this.props.preloadLimit; index++) {
+              //@ts-ignore
+              this.preloadImage(this.state.currentShowIndex + index || 0);
+            }
           }
           return (
             <ImageZoom
@@ -567,6 +566,8 @@ export default class ImageViewer extends React.Component<Props, State> {
               minScale={this.props.minScale}
               maxScale={this.props.maxScale}
               predefinedData={this.state.currentShowIndex === index ? this.props.predefinedData : undefined}
+              onStartShouldSetPanResponder={this.props.onStartShouldSetPanResponder}
+              onMoveShouldSetPanResponder={this.props.onMoveShouldSetPanResponder}
             >
               {this!.props!.renderImage!(image.props)}
             </ImageZoom>
