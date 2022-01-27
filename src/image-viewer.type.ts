@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { GestureResponderEvent, Image, ImageURISource, PanResponderGestureState, Text, View, ViewStyle } from 'react-native';
+import { IOnClick } from 'react-native-image-pan-zoom';
 import { simpleStyle } from './image-viewer.style';
 
 interface IOnMove {
@@ -113,7 +114,7 @@ export class Props {
   /**
    * 长按图片的回调
    */
-  public onLongPress?: (image?: IImageInfo) => void = () => {
+  public onLongPress?: (image?: IImageInfo, e?: IOnClick) => void = () => {
     //
   };
 
