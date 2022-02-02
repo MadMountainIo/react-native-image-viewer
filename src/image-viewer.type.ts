@@ -111,6 +111,8 @@ export class Props {
 
   public forceHeight?: number
 
+  public longPressTime?: number
+
   /**
    * 长按图片的回调
    */

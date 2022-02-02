@@ -468,6 +468,7 @@ export default class ImageViewer extends React.Component<Props, State> {
       
       const Wrapper = ({ children, ...others }: any) => (
         <ImageZoom
+        longPressTime={this.props.longPressTime}
         cropWidth={this.props.forceWidth || this.width}
         cropHeight={this.props.forceHeight || this.height}
         maxOverflow={this.props.maxOverflow}
@@ -543,6 +544,7 @@ export default class ImageViewer extends React.Component<Props, State> {
           }
           return (
             <ImageZoom
+            longPressTime={this.props.longPressTime}
             key={index}
             ref={el => (this.imageRefs[index] = el)}
             cropWidth={this.props.forceWidth || this.width}
