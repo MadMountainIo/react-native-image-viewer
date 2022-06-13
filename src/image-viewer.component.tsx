@@ -543,6 +543,7 @@ export default class ImageViewer extends React.Component<Props, State> {
             this.handleLongPressWithIndex.set(index, this.handleLongPress.bind(this, image));
           }
           return (
+            //@ts-ignore
             <ImageZoom
             longPressTime={this.props.longPressTime}
             key={index}
@@ -556,8 +557,8 @@ export default class ImageViewer extends React.Component<Props, State> {
               onLongPress={this.handleLongPressWithIndex.get(index)}
               onClick={this.handleClick}
               onDoubleClick={this.handleDoubleClick}
-              imageWidth={width}
-              imageHeight={height}
+              imageWidth={image.props?.isAd ? '100%' : width}
+              imageHeight={image.props?.isAd ? '100%' : height}
               enableSwipeDown={this.props.enableSwipeDown}
               swipeDownThreshold={this.props.swipeDownThreshold}
               onSwipeDown={this.handleSwipeDown}
