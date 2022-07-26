@@ -15,7 +15,7 @@ import {
   View,
   ViewStyle
 } from 'react-native';
-import ImageZoom from 'react-native-image-pan-zoom';
+import ImageZoom, { IOnClick } from 'react-native-image-pan-zoom';
 import styles from './image-viewer.style';
 import { IImageInfo, IImageSize, Props, State } from './image-viewer.type';
 
@@ -180,7 +180,7 @@ export default class ImageViewer extends React.Component<Props, State> {
     // Tagged success if url is started with file:, or not set yet(for custom source.uri).
     if (!image.url || image.url.startsWith(`file:`)) {
       imageLoaded = true;
-    } else if(image.props && image.props.thumbnailSource) {
+    } else if (image.props && image.props.thumbnailSource) {
       Image.prefetch(image.props.thumbnailSource);
     }
     // 如果已知源图片宽高，直接设置为 success
@@ -223,14 +223,8 @@ export default class ImageViewer extends React.Component<Props, State> {
    * 预加载图片
    */
   public preloadImage = (index: number) => {
-    let breakAfter = this.props.preloadLimit;
     if (index < this.state.imageSizes!.length) {
-      for (let i = index; i < this.state.imageSizes!.length; i++, breakAfter--) {
-        if (breakAfter <= 0) {
-          break;
-        }
-        this.loadImage(i + 1);
-      }
+      this.loadImage(index + 1);
     }
   };
   /**
@@ -380,14 +374,14 @@ export default class ImageViewer extends React.Component<Props, State> {
   /**
    * 长按
    */
-  public handleLongPress = (image: IImageInfo) => {
+  public handleLongPress = (image: IImageInfo, e: IOnClick) => {
     if (this.props.saveToLocalByLongPress) {
       // 出现保存到本地的操作框
       this.setState({ isShowMenu: true });
     }
 
     if (this.props.onLongPress) {
-      this.props.onLongPress(image);
+      this.props.onLongPress(image, e);
     }
   };
 
@@ -445,118 +439,126 @@ export default class ImageViewer extends React.Component<Props, State> {
     const screenHeight = this.height;
 
     const ImageElements = this.props.imageUrls.map((image, index) => {
-      if ((this.state.currentShowIndex || 0) > index + 1 || (this.state.currentShowIndex || 0) < index - 1) {
+      if ((this.state.currentShowIndex || 0) > index + 3 || (this.state.currentShowIndex || 0) < index - 3) {
         return <View key={index} style={{ width: screenWidth, height: screenHeight }} />;
       }
 
-      if (!this.handleLongPressWithIndex.has(index)) {
-        this.handleLongPressWithIndex.set(index, this.handleLongPress.bind(this, image));
-      }
-
+      
       let width = this!.state!.imageSizes![index] && this!.state!.imageSizes![index].width;
       let height = this.state.imageSizes![index] && this.state.imageSizes![index].height;
       const imageInfo = this.state.imageSizes![index];
-
+      
       if (!imageInfo || !imageInfo.status) {
         return <View key={index} style={{ width: screenWidth, height: screenHeight }} />;
       }
-
+      
       // 如果宽大于屏幕宽度,整体缩放到宽度是屏幕宽度
       if (width > screenWidth) {
         const widthPixel = screenWidth / width;
         width *= widthPixel;
         height *= widthPixel;
       }
-
+      
       // 如果此时高度还大于屏幕高度,整体缩放到高度是屏幕高度
       if (height > screenHeight) {
         const HeightPixel = screenHeight / height;
         width *= HeightPixel;
         height *= HeightPixel;
       }
-
+      
       const Wrapper = ({ children, ...others }: any) => (
         <ImageZoom
-          cropWidth={this.width}
-          cropHeight={this.height}
-          maxOverflow={this.props.maxOverflow}
-          horizontalOuterRangeOffset={this.handleHorizontalOuterRangeOffset}
-          responderRelease={this.handleResponderRelease}
-          onMove={this.props.onMove}
-          onLongPress={this.handleLongPressWithIndex.get(index)}
-          onClick={this.handleClick}
-          onDoubleClick={this.handleDoubleClick}
-          enableSwipeDown={this.props.enableSwipeDown}
-          swipeDownThreshold={this.props.swipeDownThreshold}
-          onSwipeDown={this.handleSwipeDown}
-          pinchToZoom={this.props.enableImageZoom}
-          enableDoubleClickZoom={this.props.enableImageZoom}
-          doubleClickInterval={this.props.doubleClickInterval}
-          {...others}
+        longPressTime={this.props.longPressTime}
+        cropWidth={this.props.forceWidth || this.width}
+        cropHeight={this.props.forceHeight || this.height}
+        maxOverflow={this.props.maxOverflow}
+        horizontalOuterRangeOffset={this.handleHorizontalOuterRangeOffset}
+        responderRelease={this.handleResponderRelease}
+        onMove={this.props.onMove}
+        onLongPress={this.handleLongPressWithIndex.get(index)}
+        onClick={this.handleClick}
+        onDoubleClick={this.handleDoubleClick}
+        enableSwipeDown={this.props.enableSwipeDown}
+        swipeDownThreshold={this.props.swipeDownThreshold}
+        onSwipeDown={this.handleSwipeDown}
+        pinchToZoom={this.props.enableImageZoom}
+        enableDoubleClickZoom={this.props.enableImageZoom}
+        doubleClickInterval={this.props.doubleClickInterval}
+        onStartShouldSetPanResponder={this.props.onStartShouldSetPanResponder}
+        onMoveShouldSetPanResponder={this.props.onMoveShouldSetPanResponder}
+        {...others}
         >
           {children}
         </ImageZoom>
       );
-
+      
       switch (imageInfo.status) {
         case 'loading':
           return (
             <Wrapper
-              key={index}
-              style={{
-                ...this.styles.modalContainer,
-                ...this.styles.loadingContainer
-              }}
-              imageWidth={screenWidth}
-              imageHeight={screenHeight}
+            key={index}
+            style={{
+              ...this.styles.modalContainer,
+              ...this.styles.loadingContainer
+            }}
+            imageWidth={screenWidth}
+            imageHeight={screenHeight}
             >
               <View style={this.styles.loadingContainer}>{this!.props!.loadingRender!()}</View>
             </Wrapper>
           );
-        case 'success':
-          if (!image.props) {
-            image.props = {};
-          }
-
-          if (!image.props.style) {
-            image.props.style = {};
-          }
-          image.props.style = {
-            ...this.styles.imageStyle, // User config can override above.
-            ...image.props.style,
-            width,
-            height
-          };
-
-          if (typeof image.props.source === 'number') {
-            // source = require(..), doing nothing
-          } else {
-            if (!image.props.source) {
-              image.props.source = {};
+          case 'success':
+            if (!image.props) {
+              image.props = {};
             }
-            image.props.source = {
-              uri: image.url,
-              ...image.props.source
+            
+            if (!image.props.style) {
+              image.props.style = {};
+            }
+            image.props.style = {
+              ...this.styles.imageStyle, // User config can override above.
+              ...image.props.style,
+              width,
+              height
             };
+            
+            if (typeof image.props.source === 'number') {
+              // source = require(..), doing nothing
+            } else {
+              if (!image.props.source) {
+                image.props.source = {};
+              }
+              image.props.source = {
+                uri: image.url,
+                ...image.props.source
+              };
+            }
+            if (this.props.enablePreload) {
+              for (let index = 0; index < this.props.preloadLimit; index++) {
+                //@ts-ignore
+              this.preloadImage(this.state.currentShowIndex + index || 0);
+            }
           }
-          if (this.props.enablePreload) {
-            this.preloadImage(this.state.currentShowIndex || 0);
+          if (!this.handleLongPressWithIndex.has(index)) {
+            this.handleLongPressWithIndex.set(index, this.handleLongPress.bind(this, image));
           }
           return (
+            //@ts-ignore
             <ImageZoom
-              key={index}
-              ref={el => (this.imageRefs[index] = el)}
-              cropWidth={this.width}
-              cropHeight={this.height}
-              maxOverflow={this.props.maxOverflow}
+            longPressTime={this.props.longPressTime}
+            key={index}
+            ref={el => (this.imageRefs[index] = el)}
+            cropWidth={this.props.forceWidth || this.width}
+            cropHeight={this.props.forceHeight || this.height}
+            maxOverflow={this.props.maxOverflow}
               horizontalOuterRangeOffset={this.handleHorizontalOuterRangeOffset}
               responderRelease={this.handleResponderRelease}
               onMove={this.props.onMove}
               onLongPress={this.handleLongPressWithIndex.get(index)}
               onClick={this.handleClick}
               onDoubleClick={this.handleDoubleClick}
-              imageWidth={width}
-              imageHeight={height}
+              imageWidth={image.props?.isAd ? '100%' : width}
+              imageHeight={image.props?.isAd ? '100%' : height}
               enableSwipeDown={this.props.enableSwipeDown}
               swipeDownThreshold={this.props.swipeDownThreshold}
               onSwipeDown={this.handleSwipeDown}
@@ -567,6 +569,8 @@ export default class ImageViewer extends React.Component<Props, State> {
               minScale={this.props.minScale}
               maxScale={this.props.maxScale}
               predefinedData={this.state.currentShowIndex === index ? this.props.predefinedData : undefined}
+              onStartShouldSetPanResponder={() => image.props?.isAd ? false : true}
+              onMoveShouldSetPanResponder={this.props.onMoveShouldSetPanResponder}
             >
               {this!.props!.renderImage!(image.props)}
             </ImageZoom>

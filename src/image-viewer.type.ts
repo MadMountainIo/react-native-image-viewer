@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Image, ImageURISource, Text, View, ViewStyle } from 'react-native';
+import { GestureResponderEvent, Image, ImageURISource, PanResponderGestureState, Text, View, ViewStyle } from 'react-native';
+import { IOnClick } from 'react-native-image-pan-zoom';
 import { simpleStyle } from './image-viewer.style';
 
 interface IOnMove {
@@ -106,10 +107,16 @@ export class Props {
 
   public preloadLimit: number = 1;
 
+  public forceWidth?: number;
+
+  public forceHeight?: number
+
+  public longPressTime?: number
+
   /**
    * 长按图片的回调
    */
-  public onLongPress?: (image?: IImageInfo) => void = () => {
+  public onLongPress?: (image?: IImageInfo, e?: IOnClick) => void = () => {
     //
   };
 
@@ -233,6 +240,16 @@ export class Props {
   public menus?: ({ cancel, saveToLocal }: any) => React.ReactElement<any>;
 
   public predefinedData?: { scale: number, positionX: number, positionY: number };
+
+  public onStartShouldSetPanResponder?: (
+    event: GestureResponderEvent,
+    gestureState: PanResponderGestureState
+  ) => boolean = () => true;
+
+  public onMoveShouldSetPanResponder?: (
+    event: GestureResponderEvent,
+    gestureState: PanResponderGestureState
+  ) => boolean = () => true;
 }
 
 export class State {
