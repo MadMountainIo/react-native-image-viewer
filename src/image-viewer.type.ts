@@ -246,12 +246,7 @@ export class Props {
     gestureState: PanResponderGestureState
   ) => boolean = () => true;
 
-  public onAdMoveShouldSetPanResponder?: (
-    event: GestureResponderEvent,
-    gestureState: PanResponderGestureState
-  ) => boolean = () => true;
-
-  public onImageMoveShouldSetPanResponder?: (
+  public onMoveShouldSetPanResponder?: (
     event: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => boolean = () => true;
