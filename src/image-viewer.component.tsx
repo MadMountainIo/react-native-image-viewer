@@ -484,7 +484,7 @@ export default class ImageViewer extends React.Component<Props, State> {
         pinchToZoom={this.props.enableImageZoom}
         enableDoubleClickZoom={this.props.enableImageZoom}
         doubleClickInterval={this.props.doubleClickInterval}
-        onStartShouldSetPanResponder={this.props.onStartShouldSetPanResponder}
+        onStartShouldSetPanResponder={() => false}
         onMoveShouldSetPanResponder={this.props.onImageMoveShouldSetPanResponder}
         {...others}
         >
@@ -570,7 +570,7 @@ export default class ImageViewer extends React.Component<Props, State> {
               maxScale={this.props.maxScale}
               predefinedData={this.state.currentShowIndex === index ? this.props.predefinedData : undefined}
               onStartShouldSetPanResponder={() => false}
-              onMoveShouldSetPanResponder={() => image.props?.isAd ? this.props.onAdMoveShouldSetPanResponder : this.props.onImageMoveShouldSetPanResponder}
+              onMoveShouldSetPanResponder={image.props?.isAd ? this.props.onAdMoveShouldSetPanResponder : this.props.onImageMoveShouldSetPanResponder}
             >
               {this!.props!.renderImage!(image.props)}
             </ImageZoom>
